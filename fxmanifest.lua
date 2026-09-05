@@ -3,8 +3,8 @@ game 'gta5'
 lua54 'yes'
 
 author 'custom'
-description 'Reference HUD — address pill above the fh4map circle, mic chip with green voice waves beside it, weather pill and drive cluster'
-version '4.0.0'
+description 'HUD hugging the fh4map circle: time, radio chip, mic with green voice waves, weather, drive cluster and address, all sized in fractions of the radar radius'
+version '4.1.0'
 
 client_language 'ru'
 

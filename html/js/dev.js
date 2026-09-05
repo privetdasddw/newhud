@@ -53,17 +53,20 @@
 
   window.HUD.apply({
     visible: true,
+    time: bright ? '2:41 PM' : '7:26 AM',
     weather: bright ? 'sun' : 'cloud',
     temperature: bright ? '84°F' : '70°F',
-    street: 'Innocence Blvd.',
-    postal: '9146',
-    direction: 'В',
+    street: 'Los Santos Freeway',
+    postal: '7285',
+    direction: 'N',
     unit: 'MPH',
-    mic: 'talking'
+    mic: 'talking',
+    radioChannel: 4,
+    radioTalking: false
   });
 
   if (params.has('long')) {
-    window.HUD.apply({ street: 'Los Santos Freeway Underpass', postal: '10243' });
+    window.HUD.apply({ street: 'Great Ocean Highway Underpass', postal: '10243' });
   }
 
   if (veh) {
@@ -71,7 +74,7 @@
       drive: true,
       speed: 41,
       gear: 'D',
-      fuel: params.has('low') ? 11 : 62
+      fuel: params.has('low') ? 11 : 100
     });
   } else {
     window.HUD.apply({ drive: false });

@@ -1,255 +1,185 @@
 /* =====================================================================
-   COMPONENTS — блоки эталонного HUD 1-в-1 (пилюли-скримы) + новый
-   блок микрофона.
+   COMPONENTS — блоки референса. Всё в долях радиуса круга (--radar-r),
+   поэтому связка «блок / радар» одинакова на любом разрешении.
 
-   Все кегли и отступы — эталонные px, пересчитанные в rem
-   (1 эталонный px = 0.0734rem), поэтому пропорции блоков сохранены
-   ровно те же, что на исходном снимке.
+   Замеры с референса (в долях радиуса r):
+     высота капсулы  .31r      кегль текста     .128r
+     круглый чип     .25r      кегль MPH        .115r
+     скорость        .30r      шкала топлива    .055r
    ================================================================== */
 
 /* ---------------------------------------------------------------------
-   АДРЕС — пилюля: пин + postal + разделитель + улица + компас.
+   ОБЩАЯ КАПСУЛА
    ------------------------------------------------------------------ */
 
-.addr {
-  width: 43.82rem;
-  height: 5.87rem;
-  border-radius: var(--r-pill);
+.time,
+.mic,
+.wx,
+.addr__pill {
+  height: var(--h);
+  padding: 0 var(--pad);
+  border-radius: 999px;
   display: flex;
   align-items: center;
-  padding: 0 1.47rem 0 2.35rem;
-}
-
-.ico--pin { width: 2.06rem; height: 2.5rem; color: var(--txt); }
-
-.addr__postal {
-  flex: none;
-  margin-left: 1.61rem;
-  font-size: 2.06rem;
-  line-height: 2.5rem;
-  letter-spacing: .037rem;
-  color: var(--txt);
-}
-
-.addr__div {
-  flex: none;
-  width: 1.5px;
-  height: 2.28rem;
-  margin: 0 2.13rem;
-  background: rgba(237, 237, 238, .85);
-}
-
-.addr__street {
-  flex: 1 1 auto;
-  min-width: 0;
-  font-size: 1.98rem;
-  font-weight: 600;
-  line-height: 2.5rem;
-  letter-spacing: .026rem;
-  text-transform: uppercase;
   white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
 }
 
-/* Компас замыкает строку: круг фиксированного размера — у С/В/Ю/З
-   разная ширина глифа, а пилюля не должна дышать при поворотах. */
-.addr__dir {
-  flex: none;
-  width: 3.38rem;
-  height: 3.38rem;
-  margin-left: 1.61rem;
-  border: .18rem solid rgba(160, 161, 162, .20);
+/* ВРЕМЯ — капсула над кругом. */
+.time {
+  font-size: var(--fs);
+  font-weight: 600;
+  letter-spacing: .01em;
+}
+
+/* РАДИОКАНАЛ — маленький чип слева сверху; в эфире зеленеет. */
+.rch {
+  width: var(--chip);
+  height: var(--chip);
   border-radius: 50%;
   display: grid;
   place-items: center;
-  font-size: 1.98rem;
-  font-weight: 600;
+  font-size: calc(var(--radar-r) * .12);
+  font-weight: 700;
+  color: var(--txt-2);
+  transition: color .16s ease;
 }
 
-/* ---------------------------------------------------------------------
-   МИКРОФОН — круглый чип в языке эталона (та же заливка и кромка,
-   что у пилюль). Когда игрок говорит, от микрофона расходятся
-   зелёные круговые волны; в покое чип монохромный и статичный,
-   выключенный микрофон приглушён и перечёркнут.
+.rch.live { color: var(--mic); }
+.rch.hide { display: none; }
 
-   Волны — три кольца с одной анимацией и разными задержками. Пока
-   игрок молчит, анимация не назначена вовсе: CEF не крутит пустой
-   композит в простое.
+/* ---------------------------------------------------------------------
+   МИКРОФОН — капсула справа сверху: глиф микрофона и три круговые
+   линии рядом с ним. Пока игрок говорит, линии зелёные и бегут одна
+   за другой; в покое они тихо-серые и статичные; выключенный
+   микрофон приглушён и перечёркнут.
+
+   Анимация назначается ТОЛЬКО в состоянии talking — в простое CEF
+   ничего не пересчитывает.
    ------------------------------------------------------------------ */
 
 .mic {
-  position: absolute;
-  width: 5.14rem;
-  height: 5.14rem;
+  position: relative;
+  gap: calc(var(--radar-r) * .05);
+  padding: 0 calc(var(--pad) * .85);
 }
 
-.mic__chip {
-  position: absolute;
-  inset: 0;
-  border-radius: 50%;
-  background: var(--surface);
-  border: 1.5px solid var(--edge);
-  box-shadow: 0 2px 12px rgba(15, 16, 17, .12),
-              inset 0 0 20px rgba(220, 221, 222, .015);
-  display: grid;
-  place-items: center;
-  transition: border-color .18s ease, box-shadow .18s ease;
-}
-
-.ico--mic {
-  width: 2.35rem;
-  height: 2.35rem;
+.mic__glyph {
+  width: calc(var(--radar-r) * .145);
+  height: calc(var(--radar-r) * .175);
   color: var(--txt-2);
-  transition: color .18s ease;
+  transition: color .16s ease;
 }
 
-/* Перечёркивание — только для выключенного микрофона. */
+.mic__glyph svg { width: 100%; height: 100%; }
+
+.mic__waves {
+  width: calc(var(--radar-r) * .12);
+  height: calc(var(--radar-r) * .19);
+  color: var(--txt-3);
+  opacity: .55;
+  transition: color .16s ease, opacity .16s ease;
+}
+
+.mic.talking .mic__glyph,
+.mic.talking .mic__waves { color: var(--mic); }
+.mic.talking .mic__waves { opacity: 1; }
+
+.mic.talking .mic__waves .w1 { animation: mic-wave 1.15s ease-in-out infinite; }
+.mic.talking .mic__waves .w2 { animation: mic-wave 1.15s ease-in-out .17s infinite; }
+.mic.talking .mic__waves .w3 { animation: mic-wave 1.15s ease-in-out .34s infinite; }
+
+@keyframes mic-wave {
+  0%, 100% { opacity: .18; }
+  45%      { opacity: 1; }
+}
+
+/* Выключенный микрофон: линий нет, глиф гаснет и перечёркивается. */
+.mic.off .mic__glyph { color: var(--off); }
+.mic.off .mic__waves { opacity: 0; }
+
 .mic__slash {
   position: absolute;
-  left: 24%;
-  right: 24%;
+  left: 14%;
+  width: calc(var(--radar-r) * .2);
   top: 50%;
   height: 1.5px;
   background: var(--off);
   transform: rotate(-45deg);
   opacity: 0;
-  transition: opacity .18s ease;
+  transition: opacity .16s ease;
 }
 
-.mic.off .mic__chip { border-color: rgba(189, 190, 191, .14); }
-.mic.off .ico--mic { color: var(--off); }
 .mic.off .mic__slash { opacity: 1; }
 
-/* ГОВОРИТ — зелёный чип + расходящиеся зелёные круги. */
-.mic.talking .mic__chip {
-  border-color: var(--mic);
-  box-shadow: 0 2px 12px rgba(15, 16, 17, .12),
-              0 0 1.1rem var(--mic-soft);
-}
-
-.mic.talking .ico--mic { color: var(--mic); }
-
-.mic__wave {
-  position: absolute;
-  inset: 0;
-  border-radius: 50%;
-  border: .17rem solid var(--mic);
-  opacity: 0;
-  transform: scale(1);
-  pointer-events: none;
-}
-
-.mic.talking .mic__wave {
-  animation: mic-wave 1.8s cubic-bezier(.2, .6, .3, 1) infinite;
-}
-
-.mic.talking .mic__wave:nth-child(2) { animation-delay: .6s; }
-.mic.talking .mic__wave:nth-child(3) { animation-delay: 1.2s; }
-
-@keyframes mic-wave {
-  0%   { opacity: .85; transform: scale(1);    border-width: .17rem; }
-  70%  { opacity: .18; }
-  100% { opacity: 0;   transform: scale(2.15); border-width: .07rem; }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .mic.talking .mic__wave { animation: none; opacity: .35; }
-  .mic.talking .mic__wave:nth-child(2) { transform: scale(1.4); opacity: .2; }
-  .mic.talking .mic__wave:nth-child(3) { transform: scale(1.8); opacity: .1; }
-}
+/* Мягкое зелёное свечение капсулы во время разговора. */
+.mic.talking { box-shadow: 0 2px 10px rgba(0, 0, 0, .32), 0 0 calc(var(--radar-r) * .12) var(--mic-soft); }
 
 /* ---------------------------------------------------------------------
-   ПОГОДА — маленькая пилюля: иконка + температура.
+   ПОГОДА — капсула справа: иконка + температура.
    ------------------------------------------------------------------ */
 
 .wx {
-  width: 15.12rem;
-  height: 5.43rem;
-  border-radius: var(--r-wx);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 1.91rem;
+  gap: var(--gap);
+  font-size: var(--fs);
+  font-weight: 600;
 }
 
-.ico--wx { width: 2.72rem; height: 2.72rem; color: var(--txt); }
-
-.wx__temp {
-  font-size: 2.06rem;
-  line-height: 2.5rem;
-  white-space: nowrap;
+.wx__ico {
+  width: calc(var(--radar-r) * .165);
+  height: calc(var(--radar-r) * .165);
+  color: var(--txt-2);
 }
+
+.wx__ico svg { width: 100%; height: 100%; }
 
 /* ---------------------------------------------------------------------
-   КЛАСТЕР — скорость + единица, разделитель, селектор PRNDS, топливо.
-   Внутренняя раскладка абсолютная, ровно как в эталоне: цифры не
-   двигают шкалу, шкала не двигает передачи.
+   КЛАСТЕР — панель справа снизу: скорость + MPH, селектор PRNDS,
+   топливо. Виден только за рулём (opacity, слой промоучен заранее).
    ------------------------------------------------------------------ */
 
 .cluster {
-  width: 29.36rem;
-  height: 23.12rem;
-  border-radius: var(--r-pill);
+  padding: calc(var(--radar-r) * .11) calc(var(--radar-r) * .16);
+  border-radius: calc(var(--radar-r) * .14);
+  display: flex;
+  flex-direction: column;
+  gap: calc(var(--radar-r) * .07);
   opacity: 0;
   transition: opacity .18s ease;
 }
 
-/* Пешком кластер скрыт через opacity, а не display: слой промоучен
-   заранее, CEF не теряет альфу при посадке в машину. */
 #hud.veh .cluster { opacity: 1; }
 
 .cluster__speed {
-  position: absolute;
-  left: 2.72rem;
-  right: 2.57rem;
-  top: 1.32rem;
-  height: 8.22rem;
   display: flex;
   align-items: baseline;
-  gap: 1.98rem;
+  gap: calc(var(--radar-r) * .07);
 }
 
 .speed {
-  font-size: 7.63rem;
+  font-size: calc(var(--radar-r) * .3);
   font-weight: 700;
-  line-height: 8.22rem;
-  letter-spacing: -.22rem;
-  white-space: nowrap;
+  line-height: 1;
+  letter-spacing: -.01em;
 }
 
-/* Четырёхзначная скорость (самолёты, читеры) не вылезает за пилюлю. */
-.speed.wide { font-size: 5.65rem; letter-spacing: -.147rem; }
-
 .speed__unit {
-  font-size: 1.98rem;
-  line-height: 2.35rem;
+  font-size: var(--fs-s);
+  font-weight: 600;
   color: var(--txt-2);
 }
 
-.cluster__div {
-  position: absolute;
-  left: 2.79rem;
-  right: 2.5rem;
-  top: 10.13rem;
-  height: 2px;
-  background: rgba(150, 151, 152, .19);
-}
+/* Волосяной разделитель под скоростью — как на референсе. */
+.cluster__speed + .gears { padding-top: calc(var(--radar-r) * .06); border-top: 1px solid rgba(255, 255, 255, .1); }
 
 .gears {
-  position: absolute;
-  left: 2.86rem;
-  top: 12.04rem;
-  height: 3.01rem;
   display: flex;
   align-items: center;
-  gap: 1.39rem;
+  gap: calc(var(--radar-r) * .09);
+  font-size: var(--fs);
 }
 
 .gears b {
-  font-size: 2.64rem;
   font-weight: 600;
-  line-height: 3.01rem;
   color: var(--off);
   transition: color .16s ease;
 }
@@ -259,28 +189,26 @@
 .gears b.on[data-g="S"] { color: var(--acc); }
 
 .fuel {
-  position: absolute;
-  left: 2.79rem;
-  right: 2.5rem;
-  top: 17.69rem;
-  height: 2.79rem;
   display: flex;
   align-items: center;
+  gap: var(--gap);
 }
 
-.ico--fuel {
-  width: 2.42rem;
-  height: 2.5rem;
-  margin-right: 1.61rem;
+.fuel__ico {
+  width: calc(var(--radar-r) * .13);
+  height: calc(var(--radar-r) * .14);
   color: var(--txt-3);
   transition: color .2s ease;
 }
 
+.fuel__ico svg { width: 100%; height: 100%; }
+
 .fuel__track {
   flex: 1;
-  height: 1.1rem;
-  border-radius: .73rem;
-  background: var(--track);
+  min-width: calc(var(--radar-r) * .8);
+  height: calc(var(--radar-r) * .055);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, .18);
   overflow: hidden;
 }
 
@@ -294,17 +222,49 @@
 }
 
 .fuel__pct {
-  width: 4.55rem;
-  margin-left: 1.69rem;
-  font-size: 2.2rem;
-  line-height: 2.64rem;
+  min-width: calc(var(--radar-r) * .36);
   text-align: right;
+  font-size: var(--fs-s);
+  font-weight: 600;
   color: var(--txt-2);
-  white-space: nowrap;
   transition: color .2s ease;
 }
 
-/* Низкий уровень — единственное состояние, которое красит стрип. */
-.fuel.low .ico--fuel,
+.fuel.low .fuel__ico,
 .fuel.low .fuel__pct { color: var(--acc); }
 .fuel.low .fuel__track i { background: var(--acc); }
+
+/* ---------------------------------------------------------------------
+   АДРЕС — капсула под кругом: «индекс, улица», следом круглый чип
+   направления. Длинная улица режется многоточием, чип всегда на месте.
+   ------------------------------------------------------------------ */
+
+.addr {
+  display: flex;
+  align-items: center;
+  gap: calc(var(--radar-r) * .06);
+}
+
+.addr__pill {
+  max-width: calc(var(--radar-r) * 2.5);
+  font-size: var(--fs);
+  font-weight: 600;
+  overflow: hidden;
+}
+
+.addr__pill span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.addr__dir {
+  flex: none;
+  width: var(--chip);
+  height: var(--chip);
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-size: calc(var(--radar-r) * .12);
+  font-weight: 700;
+}

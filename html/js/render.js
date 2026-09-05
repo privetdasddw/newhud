@@ -1,17 +1,15 @@
 /* DOM renderer. Каждое поле NUI-контракта имеет ровно один апдейтер;
    выполняются только реально изменившиеся поля.
 
-   Контракт Lua не менялся: приходят все прежние поля. Поля, которых
-   нет в этой композиции (time, night, limit, delta, cruise, seatbelt,
-   radioChannel, radioTalking), принимаются и игнорируются — блоков
-   под них в HUD нет намеренно. */
+   Контракт Lua не менялся. Поля, которым нет блока в композиции
+   (night, limit, delta, cruise, seatbelt), принимаются и игнорируются. */
 (function () {
   const S = window.HUDState;
   const $ = (id) => document.getElementById(id);
 
   const GEAR_ORDER = ['P', 'R', 'N', 'D', 'S'];
 
-  let hud, micwrap, fuelrow, speedEl;
+  let hud, micwrap, fuelrow, speedEl, radioChip;
   let fuelPlaced = false;
 
   function setTxt(el, v) {
@@ -27,6 +25,26 @@
     }
   }
 
+  /* Адрес одной строкой: «7285, Los Santos Freeway». Пока нет одной из
+     половин — показываем ту, что есть, без висячей запятой. */
+  function updateAddress() {
+    const postal = S.postal ? String(S.postal) : '';
+    const street = S.street ? String(S.street) : '';
+    let text = postal && street ? postal + ', ' + street : (postal || street);
+    if (!text) text = '...';
+    setTxt($('street'), text);
+  }
+
+  /* Радиоканал — маленький чип слева сверху: без канала его нет
+     вовсе, в эфире цифра зеленеет. */
+  function updateRadio() {
+    if (!radioChip) return;
+    const ch = Number(S.radioChannel) || 0;
+    radioChip.classList.toggle('hide', !(ch > 0));
+    radioChip.classList.toggle('live', !!S.radioTalking && ch > 0);
+    if (ch > 0) setTxt($('radiolabel'), String(ch));
+  }
+
   const noop = function () {};
 
   const renderers = {
@@ -35,26 +53,25 @@
     /* Кластер живёт только за рулём (opacity, место держится). */
     drive(v) { hud.classList.toggle('veh', !!v); },
 
+    time(v) { setTxt($('time'), v || '--:--'); },
+
     weather(v) { setIcon($('wxicon'), v || 'cloud'); },
 
     temperature(v) { setTxt($('temp'), v || '--°'); },
 
-    street(v) { setTxt($('street'), v || '...'); },
-
-    postal(v) { setTxt($('postal'), v || '----'); },
+    street() { updateAddress(); },
+    postal() { updateAddress(); },
 
     direction(v) { setTxt($('compass'), v || '?'); },
 
     unit(v) { setTxt($('unit'), v || ''); },
 
-    /* Скорость эталона: три знака с ведущими нулями, все белые.
-       UI ничего не додумывает — значение приходит из Lua. */
+    /* Скорость: три знака с ведущими нулями, все белые — как на
+       референсе. UI ничего не додумывает, значение идёт из Lua. */
     speed(v) {
       if (!speedEl) return;
       const n = Math.max(0, Math.round(Number(v) || 0));
-      const s = String(n).padStart(3, '0');
-      setTxt(speedEl, s);
-      speedEl.classList.toggle('wide', s.length > 3);
+      setTxt(speedEl, String(n).padStart(3, '0'));
     },
 
     /* Селектор PRNDS: активная буква белая, R и S в активе акцентные. */
@@ -85,23 +102,23 @@
       if (fuelrow) fuelrow.classList.toggle('low', pct <= S.lowFuel);
     },
 
-    /* МИКРОФОН: off — приглушён и перечёркнут, idle — монохромный чип,
-       talking — зелёный чип с расходящимися кругами. */
+    /* МИКРОФОН: off — приглушён и перечёркнут, idle — тихие серые
+       линии, talking — зелёные круговые линии одна за другой. */
     mic(v) {
       if (!micwrap) return;
       micwrap.classList.toggle('talking', v === 'talking');
       micwrap.classList.toggle('off', v === 'off');
     },
 
+    radioChannel() { updateRadio(); },
+    radioTalking() { updateRadio(); },
+
     /* Поля контракта без блока в этой композиции. */
-    time: noop,
     night: noop,
     limit: noop,
     delta: noop,
     cruise: noop,
-    seatbelt: noop,
-    radioChannel: noop,
-    radioTalking: noop
+    seatbelt: noop
   };
 
   let first = true;
@@ -112,6 +129,7 @@
       micwrap = $('micwrap');
       fuelrow = $('fuelrow');
       speedEl = $('speed');
+      radioChip = $('radiochip');
       first = true;   /* следующий apply() прогонит все поля заново */
       fuelPlaced = false;
 
@@ -119,6 +137,9 @@
         const svg = window.HUDIcons[el.dataset.icon];
         if (svg) el.innerHTML = svg;
       });
+
+      updateAddress();
+      updateRadio();
     },
 
     apply(data) {
@@ -140,7 +161,7 @@
         root.setProperty('--acc', data.accent);
       }
 
-      /* Цвет волн микрофона: сам круг + мягкое свечение чипа. */
+      /* Цвет круговых линий микрофона + мягкое свечение капсулы. */
       if (typeof data.micColor === 'string' && /^#[0-9a-fA-F]{6}$/.test(data.micColor)) {
         const hex = data.micColor;
         const r = parseInt(hex.slice(1, 3), 16);

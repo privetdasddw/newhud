@@ -1,43 +1,55 @@
 /* =====================================================================
-   LAYOUT — расстановка блоков.
+   LAYOUT — расстановка блоков вокруг круга радара по референсу.
 
-     · АДРЕС    — над кругом radar, левый край ровно по левой кромке
-                  круга (блок «стоит» на верхней касательной);
-     · МИКРОФОН — справа от круга, на его нижней касательной: волны
-                  расходятся в свободное поле рядом с radar;
-     · ПОГОДА   — правый край, верхняя треть (координаты эталона);
-     · КЛАСТЕР  — правый нижний угол (координаты эталона), виден
-                  только за рулём.
+   Координаты — доли радиуса круга r от его центра (cx, cy):
 
-   Привязки к radar — только через токены --radar-cx/cy/r, которые
-   Lua может переопределить (Config.Radar). Жёстких px-координат нет.
+     время      центр по cx,           низ капсулы  cy + 1.20r
+     радиоканал центр  cx - 1.31r,     центр        cy + 1.01r
+     микрофон   левый край cx + .75r,  центр        cy + 1.00r
+     погода     левый край cx + .75r,  центр        cy + 0.39r
+     кластер    левый край cx + 1.38r, низ          cy - 0.78r
+     адрес      центр по cx,           центр        cy - 0.91r
+
+   Ничего не привязано к краям экрана: сдвинулся круг (Config.Radar) —
+   вся композиция уехала вместе с ним.
    ================================================================== */
 
-.addr {
-  left: calc(var(--radar-cx) - var(--radar-r));
-  bottom: calc(var(--radar-cy) + var(--radar-r) + 1.1rem);
-  transform: translateZ(0);
+#hud > * { position: absolute; }
+
+.time {
+  left: var(--radar-cx);
+  bottom: calc(var(--radar-cy) + var(--radar-r) * 1.2);
+  transform: translate(-50%, 0) translateZ(0);
 }
 
-/* Отступ 3rem от кромки круга и небольшой подъём над нижней
-   касательной — чтобы самая широкая волна (×2.15) не залезала на
-   radar и не срезалась нижним краем экрана. */
+.rch {
+  left: calc(var(--radar-cx) - var(--radar-r) * 1.31);
+  bottom: calc(var(--radar-cy) + var(--radar-r) * 1.01);
+  transform: translate(-50%, 50%) translateZ(0);
+}
+
 .mic {
-  left: calc(var(--radar-cx) + var(--radar-r) + 3rem);
-  bottom: calc(var(--radar-cy) - var(--radar-r) + 1.2rem);
-  transform: translateZ(0);
+  left: calc(var(--radar-cx) + var(--radar-r) * .75);
+  bottom: calc(var(--radar-cy) + var(--radar-r));
+  transform: translate(0, 50%) translateZ(0);
 }
 
 .wx {
-  right: 4.272959%;
-  top: 36.187564%;
-  transform: translateZ(0);
+  left: calc(var(--radar-cx) + var(--radar-r) * .75);
+  bottom: calc(var(--radar-cy) + var(--radar-r) * .39);
+  transform: translate(0, 50%) translateZ(0);
 }
 
 .cluster {
-  right: 4.910714%;
-  bottom: 10.805301%;
+  left: calc(var(--radar-cx) + var(--radar-r) * 1.38);
+  bottom: calc(var(--radar-cy) - var(--radar-r) * .78);
   transform: translateZ(0);
+}
+
+.addr {
+  left: var(--radar-cx);
+  bottom: calc(var(--radar-cy) - var(--radar-r) * .91);
+  transform: translate(-50%, 50%) translateZ(0);
 }
 
 /* ---------------------------------------------------------------------
@@ -86,15 +98,15 @@
   height: calc(var(--radar-r) * 2);
   border-radius: 50%;
   overflow: hidden;
-  background: #080a0d;
+  background: #1d2a1c;
   border: 2px solid rgba(255, 255, 255, .2);
 }
 
-#devscene .radar .st { position: absolute; background: rgba(255, 255, 255, .055); }
-#devscene .radar .h1 { left: 0; right: 0; top: 30%; height: 1px; }
-#devscene .radar .h2 { left: 0; right: 0; top: 62%; height: 1px; }
-#devscene .radar .v1 { top: 0; bottom: 0; left: 28%; width: 1px; }
-#devscene .radar .v2 { top: 0; bottom: 0; left: 70%; width: 1px; }
+#devscene .radar .st { position: absolute; background: rgba(255, 255, 255, .075); }
+#devscene .radar .h1 { left: 0; right: 0; top: 30%; height: 2px; }
+#devscene .radar .h2 { left: 0; right: 0; top: 62%; height: 2px; }
+#devscene .radar .v1 { top: 0; bottom: 0; left: 28%; width: 2px; }
+#devscene .radar .v2 { top: 0; bottom: 0; left: 70%; width: 2px; }
 
 #devscene .radar .player {
   position: absolute; left: 50%; top: 52%; width: 10px; height: 10px;

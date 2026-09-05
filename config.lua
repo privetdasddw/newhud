@@ -26,8 +26,9 @@ Config.Unit = 'MPH'
 Config.TempUnit = 'F'
 
 -- Compass rose letters, clockwise from north. 4 cardinal directions.
--- С = север, В = восток, Ю = юг, З = запад
-Config.Compass = { 'С', 'В', 'Ю', 'З' }
+-- Латиница, как на радаре игры и на референсе: N = север, E = восток,
+-- S = юг, W = запад. Для кириллицы: { 'С', 'В', 'Ю', 'З' }.
+Config.Compass = { 'N', 'E', 'S', 'W' }
 
 -- Fuel percentage at or below which the fuel row turns accent.
 Config.LowFuel = 15
