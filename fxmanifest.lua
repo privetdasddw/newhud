@@ -3,8 +3,8 @@ game 'gta5'
 lua54 'yes'
 
 author 'custom'
-description 'Deck HUD — single-row address over the radar, modular right rail: hero speed, fuel strip, aux strip and status bar'
-version '3.0.0'
+description 'Reference HUD — address pill above the fh4map circle, mic chip with green voice waves beside it, weather pill and drive cluster'
+version '4.0.0'
 
 client_language 'ru'
 

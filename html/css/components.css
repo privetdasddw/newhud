@@ -1,0 +1,310 @@
+/* =====================================================================
+   COMPONENTS — блоки эталонного HUD 1-в-1 (пилюли-скримы) + новый
+   блок микрофона.
+
+   Все кегли и отступы — эталонные px, пересчитанные в rem
+   (1 эталонный px = 0.0734rem), поэтому пропорции блоков сохранены
+   ровно те же, что на исходном снимке.
+   ================================================================== */
+
+/* ---------------------------------------------------------------------
+   АДРЕС — пилюля: пин + postal + разделитель + улица + компас.
+   ------------------------------------------------------------------ */
+
+.addr {
+  width: 43.82rem;
+  height: 5.87rem;
+  border-radius: var(--r-pill);
+  display: flex;
+  align-items: center;
+  padding: 0 1.47rem 0 2.35rem;
+}
+
+.ico--pin { width: 2.06rem; height: 2.5rem; color: var(--txt); }
+
+.addr__postal {
+  flex: none;
+  margin-left: 1.61rem;
+  font-size: 2.06rem;
+  line-height: 2.5rem;
+  letter-spacing: .037rem;
+  color: var(--txt);
+}
+
+.addr__div {
+  flex: none;
+  width: 1.5px;
+  height: 2.28rem;
+  margin: 0 2.13rem;
+  background: rgba(237, 237, 238, .85);
+}
+
+.addr__street {
+  flex: 1 1 auto;
+  min-width: 0;
+  font-size: 1.98rem;
+  font-weight: 600;
+  line-height: 2.5rem;
+  letter-spacing: .026rem;
+  text-transform: uppercase;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Компас замыкает строку: круг фиксированного размера — у С/В/Ю/З
+   разная ширина глифа, а пилюля не должна дышать при поворотах. */
+.addr__dir {
+  flex: none;
+  width: 3.38rem;
+  height: 3.38rem;
+  margin-left: 1.61rem;
+  border: .18rem solid rgba(160, 161, 162, .20);
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-size: 1.98rem;
+  font-weight: 600;
+}
+
+/* ---------------------------------------------------------------------
+   МИКРОФОН — круглый чип в языке эталона (та же заливка и кромка,
+   что у пилюль). Когда игрок говорит, от микрофона расходятся
+   зелёные круговые волны; в покое чип монохромный и статичный,
+   выключенный микрофон приглушён и перечёркнут.
+
+   Волны — три кольца с одной анимацией и разными задержками. Пока
+   игрок молчит, анимация не назначена вовсе: CEF не крутит пустой
+   композит в простое.
+   ------------------------------------------------------------------ */
+
+.mic {
+  position: absolute;
+  width: 5.14rem;
+  height: 5.14rem;
+}
+
+.mic__chip {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: var(--surface);
+  border: 1.5px solid var(--edge);
+  box-shadow: 0 2px 12px rgba(15, 16, 17, .12),
+              inset 0 0 20px rgba(220, 221, 222, .015);
+  display: grid;
+  place-items: center;
+  transition: border-color .18s ease, box-shadow .18s ease;
+}
+
+.ico--mic {
+  width: 2.35rem;
+  height: 2.35rem;
+  color: var(--txt-2);
+  transition: color .18s ease;
+}
+
+/* Перечёркивание — только для выключенного микрофона. */
+.mic__slash {
+  position: absolute;
+  left: 24%;
+  right: 24%;
+  top: 50%;
+  height: 1.5px;
+  background: var(--off);
+  transform: rotate(-45deg);
+  opacity: 0;
+  transition: opacity .18s ease;
+}
+
+.mic.off .mic__chip { border-color: rgba(189, 190, 191, .14); }
+.mic.off .ico--mic { color: var(--off); }
+.mic.off .mic__slash { opacity: 1; }
+
+/* ГОВОРИТ — зелёный чип + расходящиеся зелёные круги. */
+.mic.talking .mic__chip {
+  border-color: var(--mic);
+  box-shadow: 0 2px 12px rgba(15, 16, 17, .12),
+              0 0 1.1rem var(--mic-soft);
+}
+
+.mic.talking .ico--mic { color: var(--mic); }
+
+.mic__wave {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: .17rem solid var(--mic);
+  opacity: 0;
+  transform: scale(1);
+  pointer-events: none;
+}
+
+.mic.talking .mic__wave {
+  animation: mic-wave 1.8s cubic-bezier(.2, .6, .3, 1) infinite;
+}
+
+.mic.talking .mic__wave:nth-child(2) { animation-delay: .6s; }
+.mic.talking .mic__wave:nth-child(3) { animation-delay: 1.2s; }
+
+@keyframes mic-wave {
+  0%   { opacity: .85; transform: scale(1);    border-width: .17rem; }
+  70%  { opacity: .18; }
+  100% { opacity: 0;   transform: scale(2.15); border-width: .07rem; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mic.talking .mic__wave { animation: none; opacity: .35; }
+  .mic.talking .mic__wave:nth-child(2) { transform: scale(1.4); opacity: .2; }
+  .mic.talking .mic__wave:nth-child(3) { transform: scale(1.8); opacity: .1; }
+}
+
+/* ---------------------------------------------------------------------
+   ПОГОДА — маленькая пилюля: иконка + температура.
+   ------------------------------------------------------------------ */
+
+.wx {
+  width: 15.12rem;
+  height: 5.43rem;
+  border-radius: var(--r-wx);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1.91rem;
+}
+
+.ico--wx { width: 2.72rem; height: 2.72rem; color: var(--txt); }
+
+.wx__temp {
+  font-size: 2.06rem;
+  line-height: 2.5rem;
+  white-space: nowrap;
+}
+
+/* ---------------------------------------------------------------------
+   КЛАСТЕР — скорость + единица, разделитель, селектор PRNDS, топливо.
+   Внутренняя раскладка абсолютная, ровно как в эталоне: цифры не
+   двигают шкалу, шкала не двигает передачи.
+   ------------------------------------------------------------------ */
+
+.cluster {
+  width: 29.36rem;
+  height: 23.12rem;
+  border-radius: var(--r-pill);
+  opacity: 0;
+  transition: opacity .18s ease;
+}
+
+/* Пешком кластер скрыт через opacity, а не display: слой промоучен
+   заранее, CEF не теряет альфу при посадке в машину. */
+#hud.veh .cluster { opacity: 1; }
+
+.cluster__speed {
+  position: absolute;
+  left: 2.72rem;
+  right: 2.57rem;
+  top: 1.32rem;
+  height: 8.22rem;
+  display: flex;
+  align-items: baseline;
+  gap: 1.98rem;
+}
+
+.speed {
+  font-size: 7.63rem;
+  font-weight: 700;
+  line-height: 8.22rem;
+  letter-spacing: -.22rem;
+  white-space: nowrap;
+}
+
+/* Четырёхзначная скорость (самолёты, читеры) не вылезает за пилюлю. */
+.speed.wide { font-size: 5.65rem; letter-spacing: -.147rem; }
+
+.speed__unit {
+  font-size: 1.98rem;
+  line-height: 2.35rem;
+  color: var(--txt-2);
+}
+
+.cluster__div {
+  position: absolute;
+  left: 2.79rem;
+  right: 2.5rem;
+  top: 10.13rem;
+  height: 2px;
+  background: rgba(150, 151, 152, .19);
+}
+
+.gears {
+  position: absolute;
+  left: 2.86rem;
+  top: 12.04rem;
+  height: 3.01rem;
+  display: flex;
+  align-items: center;
+  gap: 1.39rem;
+}
+
+.gears b {
+  font-size: 2.64rem;
+  font-weight: 600;
+  line-height: 3.01rem;
+  color: var(--off);
+  transition: color .16s ease;
+}
+
+.gears b.on { color: var(--txt); }
+.gears b.on[data-g="R"],
+.gears b.on[data-g="S"] { color: var(--acc); }
+
+.fuel {
+  position: absolute;
+  left: 2.79rem;
+  right: 2.5rem;
+  top: 17.69rem;
+  height: 2.79rem;
+  display: flex;
+  align-items: center;
+}
+
+.ico--fuel {
+  width: 2.42rem;
+  height: 2.5rem;
+  margin-right: 1.61rem;
+  color: var(--txt-3);
+  transition: color .2s ease;
+}
+
+.fuel__track {
+  flex: 1;
+  height: 1.1rem;
+  border-radius: .73rem;
+  background: var(--track);
+  overflow: hidden;
+}
+
+.fuel__track i {
+  display: block;
+  width: 0;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--txt);
+  transition: width .35s cubic-bezier(.22, 1, .36, 1), background-color .2s ease;
+}
+
+.fuel__pct {
+  width: 4.55rem;
+  margin-left: 1.69rem;
+  font-size: 2.2rem;
+  line-height: 2.64rem;
+  text-align: right;
+  color: var(--txt-2);
+  white-space: nowrap;
+  transition: color .2s ease;
+}
+
+/* Низкий уровень — единственное состояние, которое красит стрип. */
+.fuel.low .ico--fuel,
+.fuel.low .fuel__pct { color: var(--acc); }
+.fuel.low .fuel__track i { background: var(--acc); }

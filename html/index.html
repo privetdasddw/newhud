@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>HUD</title>
+<!-- Порядок блоков и их вид — эталонный HUD (пилюли-скримы),
+     привязка — геометрия круглого radar (fh4map-1.4).
+     Блоки: адрес, микрофон, погода, кластер. Больше ничего. -->
+<link rel="stylesheet" href="css/base.css">
+<link rel="stylesheet" href="css/components.css">
+<link rel="stylesheet" href="css/layout.css">
+</head>
+<body>
+<main id="hud" class="hidden" aria-label="Игровой HUD">
+
+  <!-- АДРЕС — над кругом radar, левый край по левой кромке круга -->
+  <section class="addr surf" aria-label="Местоположение">
+    <span class="ico ico--pin" data-icon="pin" aria-hidden="true"></span>
+    <span class="addr__postal" id="postal">----</span>
+    <span class="addr__div" aria-hidden="true"></span>
+    <span class="addr__street" id="street">...</span>
+    <span class="addr__dir" id="compass" aria-label="Направление">?</span>
+  </section>
+
+  <!-- МИКРОФОН — круглый чип справа от круга, на его нижней касательной.
+       Когда игрок говорит, от микрофона расходятся зелёные круги. -->
+  <section class="mic" id="micwrap" aria-label="Микрофон">
+    <span class="mic__wave" aria-hidden="true"></span>
+    <span class="mic__wave" aria-hidden="true"></span>
+    <span class="mic__wave" aria-hidden="true"></span>
+    <span class="mic__chip">
+      <span class="ico ico--mic" data-icon="mic" aria-hidden="true"></span>
+      <span class="mic__slash" aria-hidden="true"></span>
+    </span>
+  </section>
+
+  <!-- ПОГОДА -->
+  <section class="wx surf" aria-label="Погода">
+    <span class="ico ico--wx" id="wxicon" data-icon="cloud" aria-hidden="true"></span>
+    <span class="wx__temp" id="temp">--°</span>
+  </section>
+
+  <!-- КЛАСТЕР — скорость, передачи, топливо -->
+  <section class="cluster surf" id="cluster" aria-label="Приборная панель">
+    <div class="cluster__speed">
+      <span class="speed" id="speed">---</span>
+      <span class="speed__unit" id="unit"></span>
+    </div>
+    <div class="cluster__div" aria-hidden="true"></div>
+    <div class="gears" id="gearstrip" aria-label="Режим коробки передач">
+      <b data-g="P">P</b><b data-g="R">R</b><b data-g="N">N</b><b data-g="D">D</b><b data-g="S">S</b>
+    </div>
+    <div class="fuel" id="fuelrow">
+      <span class="ico ico--fuel" data-icon="fuel" aria-hidden="true"></span>
+      <span class="fuel__track"><i id="fuelbar"></i></span>
+      <span class="fuel__pct" id="fuel">--%</span>
+    </div>
+  </section>
+
+</main>
+
+<script src="js/state.js"></script>
+<script src="js/icons.js"></script>
+<script src="js/render.js"></script>
+<script src="js/main.js"></script>
+</body>
+</html>

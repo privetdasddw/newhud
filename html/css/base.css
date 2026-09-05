@@ -1,0 +1,130 @@
+/* =====================================================================
+   BASE — токены, шрифт, масштаб.
+
+   ВИЗУАЛЬНЫЙ ЯЗЫК взят из эталонного HUD (index.html прошлой версии):
+   тёмные полупрозрачные пилюли со светлой волосяной кромкой,
+   монохромный текст, крупные табличные цифры. Единственное цветное
+   пятно — зелёные волны говорящего микрофона.
+
+   МАСШТАБ. Эталон рисовался в системе 1568 x 981, поэтому 1 эталонный
+   px = 100vh / 981. Здесь всё в rem от html { font-size: 100vh / 72 },
+   то есть 1 эталонный px = 0.0734rem. Пропорции блоков к экрану и к
+   диаметру radar одинаковы на 1080p / 1440p и 16:9 / 21:9.
+   ------------------------------------------------------------------ */
+
+@font-face {
+  font-family: "Inter HUD";
+  font-style: normal;
+  font-weight: 300 800;
+  font-display: block;
+  src: url("../fonts/inter-latin.woff2") format("woff2");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6,
+                 U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F,
+                 U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215,
+                 U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: "Inter HUD";
+  font-style: normal;
+  font-weight: 300 800;
+  font-display: block;
+  src: url("../fonts/inter-cyrillic.woff2") format("woff2");
+  unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+@font-face {
+  font-family: "Sofia Sans";
+  font-style: normal;
+  font-weight: 300 700;
+  font-display: block;
+  src: url("../fonts/sofiasans-latin.woff2") format("woff2");
+  unicode-range: U+0000-00FF, U+2000-206F, U+20AC, U+2122;
+}
+@font-face {
+  font-family: "Sofia Sans";
+  font-style: normal;
+  font-weight: 300 700;
+  font-display: block;
+  src: url("../fonts/sofiasans-cyrillic.woff2") format("woff2");
+  unicode-range: U+0301, U+0400-045F, U+0490-0491, U+2116;
+}
+
+:root {
+  /* Поверхность и кромка — точные значения эталона. */
+  --surface:   rgba(29, 30, 30, .82);
+  --edge:      rgba(189, 190, 191, .23);
+  --track:     rgba(126, 127, 128, .34);
+
+  --txt:       rgb(246, 246, 247);
+  --txt-2:     rgb(218, 218, 219);
+  --txt-3:     rgb(161, 162, 163);
+  --off:       rgb(86, 86, 87);   /* неактивные передачи */
+
+  /* Функциональный акцент (перекрывается Config.Accent из Lua):
+     низкий уровень топлива, R/S-передача. */
+  --acc:       #f2b13c;
+
+  /* Микрофон: зелёные круговые волны в момент разговора. */
+  --mic:       #34d17a;
+  --mic-soft:  rgba(52, 209, 122, .28);
+
+  /* Радиусы эталона (42px / 40px пилюли при 981px высоты). */
+  --r-pill:    3.08rem;
+  --r-wx:      2.94rem;
+
+  /* Геометрия radar fh4map-1.4 (vh). Lua может переопределить через
+     Config.Radar -> сообщение config. */
+  --radar-cx: calc(20.6145vh);
+  --radar-cy: calc(21.4255vh - 44px);
+  --radar-r:  calc(13.4255vh + 2px);
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+html { font-size: clamp(11px, calc(100vh / 72), 34px); }
+
+html, body {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: transparent;
+}
+
+body {
+  font-family: "Inter HUD", "Sofia Sans", Arial, Helvetica, sans-serif;
+  color: var(--txt);
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum" 1;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  user-select: none;
+}
+
+#hud, #hud * { font-family: inherit; }
+
+#hud {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  /* Никогда не анимировать opacity корня: CEF FiveM теряет альфу. */
+}
+
+#hud.hidden { display: none; }
+
+svg { display: block; width: 100%; height: 100%; }
+
+/* ---------------------------------------------------------------------
+   ПРИМИТИВЫ
+   ------------------------------------------------------------------ */
+
+/* Пилюля-скрим эталона: полупрозрачная заливка, светлая волосяная
+   кромка, очень мягкая тень. Без backdrop-filter — CEF не размывает
+   игровой кадр, он бы дал чёрный прямоугольник. */
+.surf {
+  position: absolute;
+  background: var(--surface);
+  border: 1.5px solid var(--edge);
+  box-shadow: 0 2px 12px rgba(15, 16, 17, .12),
+              inset 0 0 20px rgba(220, 221, 222, .015);
+}
+
+.ico { display: block; flex: none; color: currentColor; }
