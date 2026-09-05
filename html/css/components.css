@@ -15,7 +15,7 @@
 .time,
 .mic,
 .wx,
-.addr__pill {
+.addr {
   height: var(--h);
   padding: 0 var(--pad);
   border-radius: 999px;
@@ -134,15 +134,17 @@
 
 /* ---------------------------------------------------------------------
    КЛАСТЕР — панель справа снизу: скорость + MPH, селектор PRNDS,
-   топливо. Виден только за рулём (opacity, слой промоучен заранее).
+   топливо. Самый плотный узел композиции: строки прижаты друг к другу,
+   шкала топлива короткая — панель не разъезжается по кадру.
+   Виден только за рулём (opacity, слой промоучен заранее).
    ------------------------------------------------------------------ */
 
 .cluster {
-  padding: calc(var(--radar-r) * .11) calc(var(--radar-r) * .16);
-  border-radius: calc(var(--radar-r) * .14);
+  padding: calc(var(--radar-r) * .085) calc(var(--radar-r) * .12);
+  border-radius: calc(var(--radar-r) * .115);
   display: flex;
   flex-direction: column;
-  gap: calc(var(--radar-r) * .07);
+  gap: calc(var(--radar-r) * .05);
   opacity: 0;
   transition: opacity .18s ease;
 }
@@ -152,11 +154,11 @@
 .cluster__speed {
   display: flex;
   align-items: baseline;
-  gap: calc(var(--radar-r) * .07);
+  gap: calc(var(--radar-r) * .055);
 }
 
 .speed {
-  font-size: calc(var(--radar-r) * .3);
+  font-size: calc(var(--radar-r) * .235);
   font-weight: 700;
   line-height: 1;
   letter-spacing: -.01em;
@@ -169,12 +171,12 @@
 }
 
 /* Волосяной разделитель под скоростью — как на референсе. */
-.cluster__speed + .gears { padding-top: calc(var(--radar-r) * .06); border-top: 1px solid rgba(255, 255, 255, .1); }
+.cluster__speed + .gears { padding-top: calc(var(--radar-r) * .045); border-top: 1px solid rgba(255, 255, 255, .1); }
 
 .gears {
   display: flex;
   align-items: center;
-  gap: calc(var(--radar-r) * .09);
+  gap: calc(var(--radar-r) * .07);
   font-size: var(--fs);
 }
 
@@ -195,8 +197,8 @@
 }
 
 .fuel__ico {
-  width: calc(var(--radar-r) * .13);
-  height: calc(var(--radar-r) * .14);
+  width: calc(var(--radar-r) * .11);
+  height: calc(var(--radar-r) * .12);
   color: var(--txt-3);
   transition: color .2s ease;
 }
@@ -205,8 +207,8 @@
 
 .fuel__track {
   flex: 1;
-  min-width: calc(var(--radar-r) * .8);
-  height: calc(var(--radar-r) * .055);
+  min-width: calc(var(--radar-r) * .58);
+  height: calc(var(--radar-r) * .045);
   border-radius: 999px;
   background: rgba(255, 255, 255, .18);
   overflow: hidden;
@@ -222,7 +224,7 @@
 }
 
 .fuel__pct {
-  min-width: calc(var(--radar-r) * .36);
+  min-width: calc(var(--radar-r) * .3);
   text-align: right;
   font-size: var(--fs-s);
   font-weight: 600;
@@ -235,36 +237,38 @@
 .fuel.low .fuel__track i { background: var(--acc); }
 
 /* ---------------------------------------------------------------------
-   АДРЕС — капсула под кругом: «индекс, улица», следом круглый чип
-   направления. Длинная улица режется многоточием, чип всегда на месте.
+   АДРЕС — одна капсула под кругом: «индекс, улица», волосяной
+   разделитель и буква направления в конце. Длинная улица режется
+   многоточием, направление всегда на месте и не дышит при поворотах
+   (у С/В/Ю/З разная ширина глифа — колонка фиксирована).
    ------------------------------------------------------------------ */
 
 .addr {
-  display: flex;
-  align-items: center;
-  gap: calc(var(--radar-r) * .06);
-}
-
-.addr__pill {
-  max-width: calc(var(--radar-r) * 2.5);
+  max-width: calc(var(--radar-r) * 2.4);
   font-size: var(--fs);
   font-weight: 600;
   overflow: hidden;
 }
 
-.addr__pill span {
+.addr__street {
+  min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
+.addr__div {
+  flex: none;
+  width: 1px;
+  height: calc(var(--radar-r) * .115);
+  margin: 0 calc(var(--radar-r) * .085);
+  background: rgba(255, 255, 255, .28);
+}
+
 .addr__dir {
   flex: none;
-  width: var(--chip);
-  height: var(--chip);
-  border-radius: 50%;
-  display: grid;
-  place-items: center;
-  font-size: calc(var(--radar-r) * .12);
+  min-width: calc(var(--radar-r) * .115);
+  text-align: center;
   font-weight: 700;
+  color: var(--txt);
 }

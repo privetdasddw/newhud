@@ -4,7 +4,7 @@ lua54 'yes'
 
 author 'custom'
 description 'HUD hugging the fh4map circle: time, radio chip, mic with green voice waves, weather, drive cluster and address, all sized in fractions of the radar radius'
-version '4.1.0'
+version '4.2.0'
 
 client_language 'ru'
 

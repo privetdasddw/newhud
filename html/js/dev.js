@@ -58,7 +58,7 @@
     temperature: bright ? '84°F' : '70°F',
     street: 'Los Santos Freeway',
     postal: '7285',
-    direction: 'N',
+    direction: 'С',
     unit: 'MPH',
     mic: 'talking',
     radioChannel: 4,

@@ -3,12 +3,15 @@
 
    Координаты — доли радиуса круга r от его центра (cx, cy):
 
-     время      центр по cx,           низ капсулы  cy + 1.20r
-     радиоканал центр  cx - 1.31r,     центр        cy + 1.01r
-     микрофон   левый край cx + .75r,  центр        cy + 1.00r
-     погода     левый край cx + .75r,  центр        cy + 0.39r
-     кластер    левый край cx + 1.38r, низ          cy - 0.78r
-     адрес      центр по cx,           центр        cy - 0.91r
+     время      центр по cx,           низ капсулы  cy + 1.16r
+     радиоканал центр  cx - 1.26r,     центр        cy + 1.00r
+     микрофон   левый край cx + .72r,  центр        cy + 1.00r
+     погода     левый край cx + .72r,  центр        cy + 0.39r
+     кластер    левый край cx + 1.28r, низ          cy - 0.80r
+     адрес      центр по cx,           центр        cy - 0.93r
+
+   Компактная ступень: блоки прижаты к кругу плотнее, чем в первой
+   сборке по референсу.
 
    Ничего не привязано к краям экрана: сдвинулся круг (Config.Radar) —
    вся композиция уехала вместе с ним.
@@ -18,37 +21,37 @@
 
 .time {
   left: var(--radar-cx);
-  bottom: calc(var(--radar-cy) + var(--radar-r) * 1.2);
+  bottom: calc(var(--radar-cy) + var(--radar-r) * 1.16);
   transform: translate(-50%, 0) translateZ(0);
 }
 
 .rch {
-  left: calc(var(--radar-cx) - var(--radar-r) * 1.31);
-  bottom: calc(var(--radar-cy) + var(--radar-r) * 1.01);
+  left: calc(var(--radar-cx) - var(--radar-r) * 1.26);
+  bottom: calc(var(--radar-cy) + var(--radar-r));
   transform: translate(-50%, 50%) translateZ(0);
 }
 
 .mic {
-  left: calc(var(--radar-cx) + var(--radar-r) * .75);
+  left: calc(var(--radar-cx) + var(--radar-r) * .72);
   bottom: calc(var(--radar-cy) + var(--radar-r));
   transform: translate(0, 50%) translateZ(0);
 }
 
 .wx {
-  left: calc(var(--radar-cx) + var(--radar-r) * .75);
+  left: calc(var(--radar-cx) + var(--radar-r) * .72);
   bottom: calc(var(--radar-cy) + var(--radar-r) * .39);
   transform: translate(0, 50%) translateZ(0);
 }
 
 .cluster {
-  left: calc(var(--radar-cx) + var(--radar-r) * 1.38);
-  bottom: calc(var(--radar-cy) - var(--radar-r) * .78);
+  left: calc(var(--radar-cx) + var(--radar-r) * 1.28);
+  bottom: calc(var(--radar-cy) - var(--radar-r) * .8);
   transform: translateZ(0);
 }
 
 .addr {
   left: var(--radar-cx);
-  bottom: calc(var(--radar-cy) - var(--radar-r) * .91);
+  bottom: calc(var(--radar-cy) - var(--radar-r) * .93);
   transform: translate(-50%, 50%) translateZ(0);
 }
 

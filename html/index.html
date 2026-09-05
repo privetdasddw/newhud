@@ -66,10 +66,11 @@
     </div>
   </section>
 
-  <!-- АДРЕС + НАПРАВЛЕНИЕ -->
-  <div class="addr" aria-label="Местоположение">
-    <span class="addr__pill surf"><span id="street">...</span></span>
-    <span class="addr__dir surf" id="compass">?</span>
+  <!-- АДРЕС — одна капсула: «индекс, улица» и направление в конце -->
+  <div class="addr surf" aria-label="Местоположение">
+    <span class="addr__street" id="street">...</span>
+    <span class="addr__div" aria-hidden="true"></span>
+    <span class="addr__dir" id="compass" aria-label="Направление">?</span>
   </div>
 
 </main>
