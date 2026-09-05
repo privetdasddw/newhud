@@ -1,0 +1,48 @@
+name: Release asset
+
+# uploads.github.com бывает недоступен из локального окружения, поэтому
+# архив ресурса собирает и прикладывает к релизу сам GitHub:
+#   · автоматически при публикации релиза;
+#   · вручную (workflow_dispatch) с указанием тега.
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Тег релиза, к которому приложить архив (например v4.0.0)'
+        required: true
+        type: string
+
+permissions:
+  contents: write
+
+jobs:
+  attach:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Определить тег
+        id: meta
+        run: echo "tag=${{ github.event.release.tag_name || inputs.tag }}" >> "$GITHUB_OUTPUT"
+
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ steps.meta.outputs.tag }}
+
+      - name: Собрать hud-<version>.zip
+        id: pack
+        run: |
+          set -euo pipefail
+          version="$(grep -oP "version\s+'\K[0-9]+\.[0-9]+\.[0-9]+" fxmanifest.lua)"
+          mkdir -p /tmp/pack/hud
+          rsync -a --exclude '.git' --exclude '.github' --exclude 'release' \
+                --exclude '_preview_*.png' --exclude '_shot_*.png' \
+                ./ /tmp/pack/hud/
+          (cd /tmp/pack && zip -qr "$GITHUB_WORKSPACE/hud-${version}.zip" hud)
+          echo "file=hud-${version}.zip" >> "$GITHUB_OUTPUT"
+
+      - name: Приложить архив к релизу
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release upload "${{ steps.meta.outputs.tag }}" "${{ steps.pack.outputs.file }}" --clobber

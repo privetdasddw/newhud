@@ -1,11 +1,15 @@
-/* Browser-only preview: fake night scene, radar placeholder, mock data.
-   Loaded by main.js ONLY outside FiveM. */
+/* Browser-only preview: макетная ночная сцена, круг radar на месте
+   fh4map и демо-данные. Загружается из main.js ТОЛЬКО вне FiveM.
+
+   Флаги:
+     ?veh     — за рулём (виден кластер)
+     ?bright  — дневная сцена (проверка читаемости плашек)
+     ?long    — самая длинная улица + 5-значный postal
+     ?low     — низкий уровень топлива
+     ?mic=talking|idle|off — зафиксировать состояние микрофона
+                             (по умолчанию состояния сменяются циклом) */
 (function () {
   document.body.classList.add('dev');
-
-  const style = document.createElement('style');
-  style.textContent = 'body.dev #hud{position:fixed}';
-  document.head.appendChild(style);
 
   const scene = document.createElement('div');
   scene.id = 'devscene';
@@ -28,8 +32,6 @@
     </div>`;
   document.body.prepend(scene);
 
-  /* ?bright — дневная сцена: проверяет читаемость плашек на светлом
-     небе и снегу (ночная — дефолт, как в реальном вечернем кадре). */
   const params = new URLSearchParams(location.search);
   const veh = params.has('veh');
   const bright = params.has('bright');
@@ -42,61 +44,53 @@
       'body.bright #devscene .bokeh{display:none}',
       'body.bright #devscene .road{background:linear-gradient(180deg,rgba(122,132,142,0) 0%,rgba(104,114,125,.92) 30%,#78838f 100%)}',
       'body.bright #devscene .lane{background:repeating-linear-gradient(180deg,rgba(255,255,255,.55) 0 26px,transparent 26px 66px);opacity:.55}',
-      'body.bright #devscene .vignette{box-shadow:inset 0 0 220px 60px rgba(25,35,50,.22)}',
-      'body.bright #devscene .radar{border-color:rgba(0,0,0,.28)}'
+      'body.bright #devscene .vignette{box-shadow:inset 0 0 220px 60px rgba(25,35,50,.22)}'
     ].join('');
     document.head.appendChild(st);
   }
 
-  /* Preview использует тот же accent, что стоит в config.lua
-     (Config.Accent = '#f2b13c') — единственный функциональный цвет HUD. */
-  window.HUD.config({ accent: '#f2b13c', lowFuel: 15 });
+  window.HUD.config({ accent: '#f2b13c', micColor: '#34d17a', lowFuel: 15 });
 
   window.HUD.apply({
     visible: true,
-    time: bright ? '2:41 PM' : '8:56 PM',
-    night: !bright,
+    time: bright ? '2:41 PM' : '7:26 AM',
     weather: bright ? 'sun' : 'cloud',
     temperature: bright ? '84°F' : '70°F',
-    street: 'Innocence Blvd.',
-    postal: '9146',
-    direction: 'В',
+    street: 'Los Santos Freeway',
+    postal: '7285',
+    direction: 'С',
     unit: 'MPH',
-    mic: veh ? 'idle' : 'talking',
-    radioChannel: 2,
+    mic: 'talking',
+    radioChannel: 4,
     radioTalking: false
   });
 
-  /* ?long — самое длинное название улицы Лос-Сантоса + 5-значный postal:
-     плашка не должна вылезать за диаметр круга (ellipsis раньше). */
   if (params.has('long')) {
-    window.HUD.apply({ street: 'Mount Vinewood Dr.', postal: '10243' });
+    window.HUD.apply({ street: 'Great Ocean Highway Underpass', postal: '10243' });
   }
 
   if (veh) {
-    /* Штатное состояние: скорость ниже лимита, знак не инвертирован. */
     window.HUD.apply({
       drive: true,
       speed: 41,
-      gear: 'S',
-      fuel: 62,
-      limit: 50,
-      delta: 0,
-      seatbelt: false
+      gear: 'D',
+      fuel: params.has('low') ? 11 : 100
     });
-
-    /* ?over — стресс-тест состояний: превышение (+delta, инверсия знака),
-       низкий топливо (акцент), эфир радио, пристёгнутый ремень. */
-    if (params.has('over')) {
-      window.HUD.apply({
-        speed: 58,
-        gear: 'D',
-        fuel: 12,
-        seatbelt: true,
-        radioTalking: true
-      });
-    }
   } else {
-    window.HUD.apply({ drive: false, seatbelt: null, limit: 0, delta: 0 });
+    window.HUD.apply({ drive: false });
+  }
+
+  /* Микрофон: либо зафиксированное состояние, либо цикл
+     talking → idle → off, чтобы было видно зелёные волны. */
+  const fixed = params.get('mic');
+  if (fixed) {
+    window.HUD.apply({ mic: fixed });
+  } else {
+    const cycle = ['talking', 'idle', 'off'];
+    let i = 0;
+    setInterval(() => {
+      i = (i + 1) % cycle.length;
+      window.HUD.apply({ mic: cycle[i] });
+    }, 4000);
   }
 })();

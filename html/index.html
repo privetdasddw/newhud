@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>HUD</title>
+<!-- Композиция по референсу: все блоки облепляют круг радара
+     (fh4map-1.4). Размеры заданы в долях радиуса круга, поэтому
+     пропорции «блок / радар» ровно те же, что на референсе.
+
+       · время      — капсула над кругом;
+       · радиоканал — маленький чип слева сверху;
+       · микрофон   — капсула справа сверху: глиф + зелёные круговые
+                      линии, пока игрок говорит;
+       · погода     — капсула справа;
+       · кластер    — панель справа снизу: скорость, PRNDS, топливо;
+       · адрес      — капсула под кругом + чип направления. -->
+<link rel="stylesheet" href="css/base.css">
+<link rel="stylesheet" href="css/components.css">
+<link rel="stylesheet" href="css/layout.css">
+</head>
+<body>
+<main id="hud" class="hidden" aria-label="Игровой HUD">
+
+  <!-- ВРЕМЯ -->
+  <section class="time surf" aria-label="Время">
+    <span id="time">--:--</span>
+  </section>
+
+  <!-- РАДИОКАНАЛ — чип виден только когда игрок в канале -->
+  <section class="rch surf hide" id="radiochip" aria-label="Радиоканал">
+    <span id="radiolabel">0</span>
+  </section>
+
+  <!-- МИКРОФОН -->
+  <section class="mic surf" id="micwrap" aria-label="Микрофон">
+    <span class="mic__glyph" data-icon="mic" aria-hidden="true"></span>
+    <svg class="mic__waves" viewBox="0 0 15 24" fill="none" stroke="currentColor"
+         stroke-width="1.7" stroke-linecap="round" aria-hidden="true">
+      <path class="w1" d="M2.5 9.4a5.5 5.5 0 0 1 0 5.2"></path>
+      <path class="w2" d="M6.6 6.4a11 11 0 0 1 0 11.2"></path>
+      <path class="w3" d="M10.7 3.4a16.5 16.5 0 0 1 0 17.2"></path>
+    </svg>
+    <span class="mic__slash" aria-hidden="true"></span>
+  </section>
+
+  <!-- ПОГОДА -->
+  <section class="wx surf" aria-label="Погода">
+    <span class="wx__ico" id="wxicon" data-icon="cloud" aria-hidden="true"></span>
+    <span id="temp">--°</span>
+  </section>
+
+  <!-- КЛАСТЕР -->
+  <section class="cluster surf" id="cluster" aria-label="Приборная панель">
+    <div class="cluster__speed">
+      <span class="speed" id="speed">000</span>
+      <span class="speed__unit" id="unit"></span>
+    </div>
+    <div class="gears" id="gearstrip" aria-label="Режим коробки передач">
+      <b data-g="P">P</b><b data-g="R">R</b><b data-g="N">N</b><b data-g="D">D</b><b data-g="S">S</b>
+    </div>
+    <div class="fuel" id="fuelrow">
+      <span class="fuel__ico" data-icon="fuel" aria-hidden="true"></span>
+      <span class="fuel__track"><i id="fuelbar"></i></span>
+      <span class="fuel__pct" id="fuel">--%</span>
+    </div>
+  </section>
+
+  <!-- АДРЕС — одна капсула: «индекс, улица» и направление в конце -->
+  <div class="addr surf" aria-label="Местоположение">
+    <span class="addr__street" id="street">...</span>
+    <span class="addr__div" aria-hidden="true"></span>
+    <span class="addr__dir" id="compass" aria-label="Направление">?</span>
+  </div>
+
+</main>
+
+<script src="js/state.js"></script>
+<script src="js/icons.js"></script>
+<script src="js/render.js"></script>
+<script src="js/main.js"></script>
+</body>
+</html>

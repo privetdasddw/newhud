@@ -462,9 +462,9 @@ CreateThread(function()
                 put('direction', directionOf(entity))
                 put('unit', string.upper(Config.Unit or 'KMH'))
 
-                put('mic', micState())
-                put('radioChannel', radioChannel())
-                put('radioTalking', radioTalking)
+                -- mic/radio уходят отдельным быстрым циклом ниже:
+                -- зелёные волны микрофона должны включаться сразу,
+                -- а не через такт основного цикла.
 
                 put('drive', driving)
                 if driving then
@@ -496,7 +496,42 @@ CreateThread(function()
     end
 end)
 
+------------------------------------------------------------------
+-- VOICE LOOP — отдельный быстрый цикл микрофона
+--
+-- Блок микрофона реагирует на речь визуально (зелёные круговые
+-- волны), поэтому состояние опрашивается чаще основного цикла
+-- (Config.VoiceInterval, 100 мс) и диффится тем же кэшем: в CEF
+-- уходит только смена состояния off/idle/talking.
+------------------------------------------------------------------
+
+CreateThread(function()
+    while true do
+        Wait(Config.VoiceInterval or 100)
+
+        if uiReady and sent.visible == true then
+            local out = {}
+
+            local function put(key, value)
+                if sent[key] == value then return end
+                sent[key] = value
+                out[key] = value
+            end
+
+            put('mic', micState())
+            put('radioChannel', radioChannel())
+            put('radioTalking', radioTalking)
+
+            if next(out) ~= nil then
+                out.action = 'hud'
+                SendNUIMessage(out)
+            end
+        end
+    end
+end)
+
 -- Temperature fallback: cached value instantly, weather estimate later.
+
 CreateThread(function()
     local cached = tonumber(GetResourceKvpString(TEMP_KVP) or '')
     if cached then setTemperature(cached) end
@@ -513,7 +548,12 @@ end)
 ------------------------------------------------------------------
 
 local function pushConfig()
-    local payload = { action = 'config', accent = Config.Accent, lowFuel = Config.LowFuel or 15 }
+    local payload = {
+        action = 'config',
+        accent = Config.Accent,
+        micColor = Config.MicColor,
+        lowFuel = Config.LowFuel or 15,
+    }
 
     local cfg = Config.Radar
     if type(cfg) == 'table' then

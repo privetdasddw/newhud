@@ -1,0 +1,118 @@
+/* =====================================================================
+   BASE — токены, шрифт, геометрия.
+
+   ГЛАВНЫЙ ПРИНЦИП. Все размеры и отступы заданы в долях радиуса круга
+   радара (--radar-r). Композиция «блоки вокруг круга» с референса
+   сохраняет пропорции на любом разрешении и при любом размере
+   миникарты: поменялся круг — вместе с ним поменялся весь HUD.
+   ------------------------------------------------------------------ */
+
+@font-face {
+  font-family: "Inter HUD";
+  font-style: normal;
+  font-weight: 300 800;
+  font-display: block;
+  src: url("../fonts/inter-latin.woff2") format("woff2");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6,
+                 U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F,
+                 U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215,
+                 U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: "Inter HUD";
+  font-style: normal;
+  font-weight: 300 800;
+  font-display: block;
+  src: url("../fonts/inter-cyrillic.woff2") format("woff2");
+  unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+@font-face {
+  font-family: "Sofia Sans";
+  font-style: normal;
+  font-weight: 300 700;
+  font-display: block;
+  src: url("../fonts/sofiasans-latin.woff2") format("woff2");
+  unicode-range: U+0000-00FF, U+2000-206F, U+20AC, U+2122;
+}
+@font-face {
+  font-family: "Sofia Sans";
+  font-style: normal;
+  font-weight: 300 700;
+  font-display: block;
+  src: url("../fonts/sofiasans-cyrillic.woff2") format("woff2");
+  unicode-range: U+0301, U+0400-045F, U+0490-0491, U+2116;
+}
+
+:root {
+  /* --- Геометрия radar (fh4map-1.4, vh). Переопределяется из Lua. --- */
+  --radar-cx: calc(20.6145vh);
+  --radar-cy: calc(21.4255vh - 44px);
+  --radar-r:  calc(13.4255vh + 2px);
+
+  /* --- Метрика композиции: доли радиуса круга ---------------------
+     Компактная ступень: капсулы ниже, кегль мельче, воздух плотнее,
+     чем на первой сборке по референсу. Меняешь эти шесть чисел —
+     меняется весь HUD разом, ничего больше править не нужно. */
+  --h:    calc(var(--radar-r) * .255);   /* высота капсулы          */
+  --pad:  calc(var(--radar-r) * .125);   /* горизонтальный padding  */
+  --gap:  calc(var(--radar-r) * .085);   /* внутренний зазор        */
+  --fs:   calc(var(--radar-r) * .112);   /* базовый кегль           */
+  --fs-s: calc(var(--radar-r) * .1);     /* мелкий кегль (MPH)      */
+  --chip: calc(var(--radar-r) * .21);    /* круглый чип             */
+
+  /* --- Поверхности: тёмные полупрозрачные капсулы без светлой кромки --- */
+  --surface: rgba(17, 18, 20, .66);
+  --hair:    rgba(255, 255, 255, .06);
+
+  --txt:   rgb(246, 246, 247);
+  --txt-2: rgb(214, 215, 216);
+  --txt-3: rgb(150, 151, 153);
+  --off:   rgb(104, 105, 107);   /* неактивные передачи */
+
+  /* Функциональный акцент (Config.Accent): низкое топливо, R/S. */
+  --acc: #f2b13c;
+
+  /* Микрофон: зелёные круговые линии во время разговора. */
+  --mic:      #34d17a;
+  --mic-soft: rgba(52, 209, 122, .28);
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+html, body {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: transparent;
+}
+
+body {
+  font-family: "Inter HUD", "Sofia Sans", Arial, Helvetica, sans-serif;
+  color: var(--txt);
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum" 1;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  user-select: none;
+}
+
+#hud, #hud * { font-family: inherit; }
+
+#hud {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  /* Никогда не анимировать opacity корня: CEF FiveM теряет альфу. */
+}
+
+#hud.hidden { display: none; }
+
+svg { display: block; }
+
+/* Капсула-поверхность: ровная тёмная заливка, волосяная светлая
+   кромка и мягкая тень — как на референсе, без стекла и glow. */
+.surf {
+  background: var(--surface);
+  border: 1px solid var(--hair);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, .32);
+}

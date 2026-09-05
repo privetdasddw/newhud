@@ -26,11 +26,16 @@ Config.Unit = 'MPH'
 Config.TempUnit = 'F'
 
 -- Compass rose letters, clockwise from north. 4 cardinal directions.
--- С = север, В = восток, Ю = юг, З = запад
+-- Кириллица: С = север, В = восток, Ю = юг, З = запад.
+-- Для латиницы: { 'N', 'E', 'S', 'W' }.
 Config.Compass = { 'С', 'В', 'Ю', 'З' }
 
 -- Fuel percentage at or below which the fuel row turns accent.
 Config.LowFuel = 15
+
+-- Цвет круговых волн микрофона: когда игрок говорит, от чипа
+-- микрофона расходятся круги этого цвета. Зелёный по умолчанию.
+Config.MicColor = '#34d17a'
 
 ------------------------------------------------------------------
 -- SPEED LIMIT / OVERSET DELTA
